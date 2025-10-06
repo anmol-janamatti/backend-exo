@@ -33,6 +33,11 @@ class PlanetData(BaseModel):
     transit_duration:float
     signal_to_noise:float
     insolation_flux:float
+
+@app.get("/")
+def root():
+    return {"status": "running"}
+
     
 @app.post("/predict")
 def predict(data:PlanetData):
