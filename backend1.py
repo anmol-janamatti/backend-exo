@@ -40,15 +40,32 @@ def root():
 
     
 @app.post("/predict")
-def predict(data:PlanetData):
-    X=np.array([[data.orbital_period,data.transit_depth,data.transit_duration,data.signal_to_noise,data.insolation_flux]])
-    X_scaled=scaler.transform(X)
-    
-    preds=model.predict(X_scaled)
-    preds_class=np.argmax(preds,axis=1)
-    label=encoder.inverse_transform(preds_class)[0]
-    
-    return{
-        "prediction":label,
-        "confidence":float(np.max(preds))
-    }
+def predict(data: PlanetData):
+    print("✅ Step 1: Received request:", data.dict())
+
+    try:
+        X = np.array([[data.orbital_period, data.transit_depth,
+                       data.transit_duration, data.signal_to_noise,
+                       data.insolation_flux]])
+        print("✅ Step 2: Input array:", X)
+
+        X_scaled = scaler.transform(X)
+        print("✅ Step 3: Scaled input:", X_scaled)
+
+        preds = model.predict(X_scaled, verbose=0)
+        print("✅ Step 4: Model predicted:", preds)
+
+        preds_class = np.argmax(preds, axis=1)
+        print("✅ Step 5: Pred class:", preds_class)
+
+        label = encoder.inverse_transform(preds_class)[0]
+        print("✅ Step 6: Label:", label)
+
+        return {
+            "prediction": label,
+            "confidence": float(np.max(preds))
+        }
+
+    except Exception as e:
+        print("❌ Error:", str(e))
+        return {"error": str(e)}
